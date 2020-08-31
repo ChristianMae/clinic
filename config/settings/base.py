@@ -4,6 +4,7 @@ Base settings to build other setting files.
 import os
 from pathlib import Path
 import environ
+from datetime import timedelta
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 APPS_DIR = BASE_DIR / "clinic"
@@ -36,6 +37,7 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = [
     'simple_history',
+    'rest_framework',
 ]
 
 LOCAL_APPS = [
@@ -122,3 +124,16 @@ EMAIL_TIMEOUT = 5
 ADMIN_URL = "admin/"
 ADMINS = [("""Daniel Roy Greenfeld""", "daniel-roy-greenfeld@example.com")]
 MANAGERS = ADMINS
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
