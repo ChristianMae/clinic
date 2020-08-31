@@ -1,3 +1,9 @@
 from django.shortcuts import render
+from rest_framework.viewsets import ModelViewSet
 
-# Create your views here.
+from .serializers import ProcedureSerializer
+
+
+class ProcedureModelViewSet(ModelViewSet):
+    serializer_class = ProcedureSerializer
+    queryset = serializer_class.Meta.model.objects.all()
