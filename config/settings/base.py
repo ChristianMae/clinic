@@ -16,14 +16,14 @@ READ_DOT_ENV_FILE = base('.env')
 if READ_DOT_ENV_FILE:
     env.read_env(READ_DOT_ENV_FILE)
 
-
 DATABASES = {
     "default": env.db("DATABASE_URL", default="postgres:///clinic")
 }
 
-
 ROOT_URLCONF = 'config.urls'
 WSGI_APPLICATION = 'config.wsgi.application'
+
+AUTH_USER_MODEL = 'staffs.Staff'
 
 DJANGO_APPS = [
     'django.contrib.admin',
@@ -35,11 +35,18 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
-     # Third party apps go here
+    'simple_history',
 ]
 
 LOCAL_APPS = [
-    # Your stuff: custom apps go here
+    "clinic.appointments",
+    "clinic.locations",
+    "clinic.machines",
+    "clinic.patient_sessions",
+    "clinic.patients",
+    "clinic.procedures",
+    "clinic.rooms",
+    "clinic.staffs",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -52,6 +59,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
 ]
 
 TEMPLATES = [
