@@ -57,7 +57,7 @@ class Staff(AbstractUser):
     objects = UserManager()
     USERNAME_FIELD = 'email'
     EMAIL_FIELD = 'email'
-    REQUIRED_FIELDS = ('assigned_to', )
+    REQUIRED_FIELDS = ('first_name', )
 
     def __str__(self):
         return '{}, {} {}'.format(self.last_name, self.first_name, self.middle_name)

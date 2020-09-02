@@ -38,6 +38,7 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     'simple_history',
     'rest_framework',
+    'corsheaders',
 ]
 
 LOCAL_APPS = [
@@ -62,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'simple_history.middleware.HistoryRequestMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 TEMPLATES = [
@@ -137,3 +139,7 @@ SIMPLE_JWT = {
 
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
+
+CORS_ALLOWED_ORIGINS = [
+    "http://192.168.1.8:8081"
+]
