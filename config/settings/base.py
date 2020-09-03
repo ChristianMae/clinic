@@ -140,6 +140,10 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-CORS_ALLOWED_ORIGINS = [
-    "http://192.168.1.8:8081"
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "http://192.168.1.8:8081"
+#     "http://localhost:8081",
+#     "http://127.0.0.1:8080"
+# ]
+
+CORS_ALLOW_ALL_ORIGINS = True
