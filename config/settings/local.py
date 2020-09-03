@@ -9,7 +9,7 @@ SECRET_KEY = env(
     default="^#lg4cilg8(ec4t_nj4(p(2&#(&@c5_75m2!4mu_0zwa3&+aq^",
 )
 
-ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1"]
+ALLOWED_HOSTS = ["*"]
 
 EMAIL_BACKEND = env(
     "DJANGO_EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend"
