@@ -45,7 +45,7 @@ LOCAL_APPS = [
     "clinic.appointments",
     "clinic.locations",
     "clinic.machines",
-    "clinic.patient_sessions",
+    "clinic.patient_sessions.apps.PatientSessionsConfig",
     "clinic.patients",
     "clinic.procedures",
     "clinic.rooms",

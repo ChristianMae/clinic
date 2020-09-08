@@ -2,4 +2,7 @@ from django.apps import AppConfig
 
 
 class PatientSessionsConfig(AppConfig):
-    name = 'patient_sessions'
+    name = 'clinic.patient_sessions'
+
+    def ready(self):
+        from .signals import SessionSignal

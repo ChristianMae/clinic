@@ -25,7 +25,7 @@ class Session(TimeStampedModel):
         **OPTIONAL
     )
     number_of_session = models.IntegerField(**OPTIONAL)
-    start_date = models.DateTimeField(**OPTIONAL)
+    start_date = models.DateField(**OPTIONAL)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -69,7 +69,8 @@ class AppointmentSession(TimeStampedModel):
         **OPTIONAL
     )
     date = models.DateField(**OPTIONAL)
-    time = models.TimeField(**OPTIONAL)
+    start_time = models.TimeField(**OPTIONAL)
+    end_time = models.TimeField(**OPTIONAL)
     symptoms = models.TextField(**OPTIONAL)
     findings = models.TextField(**OPTIONAL)
     prescription = models.TextField(**OPTIONAL)
@@ -78,4 +79,4 @@ class AppointmentSession(TimeStampedModel):
 
 
     def __str__(self):
-        return f'{self.session.patient} - {self.data}'
+        return f'{self.session.patient} - {self.date}'

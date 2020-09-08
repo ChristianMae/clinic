@@ -10,4 +10,4 @@ class Machine(TimeStampedModel):
     history = HistoricalRecords()
 
     def __str__(self):
-        return self.name
+        return f'{self.name} - {self.model}'

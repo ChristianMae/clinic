@@ -5,8 +5,8 @@ from utility.constants import OPTIONAL
 
 
 class Room(TimeStampedModel):
-    room_no = models.CharField(max_length=3)
-    floor_no = models.CharField(max_length=3)
+    room_no = models.CharField(max_length=10)
+    floor_no = models.CharField(max_length=10)
     location = models.ForeignKey('locations.Location', on_delete=models.CASCADE, related_name='location', **OPTIONAL)
     history = HistoricalRecords()
     

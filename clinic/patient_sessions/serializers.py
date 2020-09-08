@@ -1,8 +1,11 @@
 from rest_framework.serializers import ModelSerializer
+from rest_framework import serializers
 from .models import (
     Session,
     AppointmentSession
 )
+from clinic.rooms.models import Room
+from clinic.machines.models import Machine
 
 
 class SessionSerializer(ModelSerializer):
@@ -23,9 +26,11 @@ class SessionSerializer(ModelSerializer):
 
 
 class AppointmentSessionSerializer(ModelSerializer):
+    session = SessionSerializer()
+
     class Meta:
         model = AppointmentSession
-        fields = '__all__'
+        fields = ('__all__')
 
     def create(self, validated_data):
         return self.Meta.model.objects.create(**validated_data)
@@ -42,3 +47,36 @@ class AppointmentSessionSerializer(ModelSerializer):
         instance.prescription = validated_data.get('prescription', instance.prescription)
         instance.image = validated_data.get('image', instance.image)
         return instance
+
+    def validate_session(self, data):
+        import pdb; pdb.set_trace()
+        machine = self.initial_data['machine'] if self.initial_data['machine'] else None
+        room = self.initial_data['room'] if self.initial_data['room'] else None
+        start_time = self.initial_data['start_time'] if self.initial_data['start_time'] else None
+        end_time = self.initial_data['end_time'] if self.initial_data['end_time'] else None
+        date = data['start_date']
+
+        machines = self.Meta.model.objects.filter(
+            machine=machine,
+            date=date,
+            start_time__range=(start_time, end_time)
+        )
+
+        if machines:
+            raise serializers.ValidationError(f'Machine is not available on {date} ({start_time})', code='Unavailble')
+        
+        rooms = self.Meta.model.objects.filter(
+            room=room,
+            date=date,
+            start_time__range=(start_time, end_time)
+        )
+
+        if rooms:
+            raise serializers.ValidationError(f'Room is not available on {date} ({start_time})', code='Unavailable')
+
+        session_data = dict(data)
+        session, created = Session.objects.get_or_create(**session_data)
+        return session
+    
+    def validate_date(self, data):
+        return self.initial_data['session.start_date']
