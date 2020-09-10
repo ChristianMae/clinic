@@ -8,25 +8,7 @@ from clinic.rooms.models import Room
 from clinic.machines.models import Machine
 
 
-class SessionSerializer(ModelSerializer):
-    class Meta:
-        model = Session
-        fields = '__all__'
-
-    def create(self, validated_data):
-        return self.Meta.model.objects.create(**validated_data)
-
-    def update(self, instance, validated_data):
-        instance.patient = validated_data.get('patient', instance.patient)
-        instance.procedure = validated_data.get('procedure', instance.procedure)
-        instance.session_interval = validated_data.get('session_interval', instance.session_interval)
-        instance.number_of_session = validated_data.get('number_of_session', instance.number_of_session)
-        instance.start_date = validated_data.get('start_date', instance.start_date)
-        return instance
-
-
 class AppointmentSessionSerializer(ModelSerializer):
-    session = SessionSerializer()
 
     class Meta:
         model = AppointmentSession
@@ -79,3 +61,34 @@ class AppointmentSessionSerializer(ModelSerializer):
     
     def validate_date(self, data):
         return self.initial_data['session.start_date']
+
+
+def date_offset_generator(date, interval):
+    import calendar
+    from datetime import timedelta
+
+    days_available = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+    if calendar.day_name[date.weekday()] in days_available:
+        return date
+    elif calendar.day_name[date.weekday()] == 'Sunday':
+        return date + timedelta(days=1)
+    else:
+        return date + timedelta(days=2)
+
+
+class SessionSerializer(ModelSerializer):
+    sessions = AppointmentSessionSerializer(many=True,read_only=True)
+    class Meta:
+        model = Session
+        fields = ('patient', 'procedure', 'session_interval', 'number_of_session', 'start_date', 'sessions')
+
+    def create(self, validated_data):
+        return self.Meta.model.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.patient = validated_data.get('patient', instance.patient)
+        instance.procedure = validated_data.get('procedure', instance.procedure)
+        instance.session_interval = validated_data.get('session_interval', instance.session_interval)
+        instance.number_of_session = validated_data.get('number_of_session', instance.number_of_session)
+        instance.start_date = validated_data.get('start_date', instance.start_date)
+        return instance

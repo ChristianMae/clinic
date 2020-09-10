@@ -6,12 +6,11 @@ from .views import (
     AppointmentSessionModelViewSet
 )
 
-# router = DefaultRouter()
-# router.register(r'', SessionModelViewSet)
-# router.register(r'session_appointment', AppointmentSessionModelViewSet)
+router = DefaultRouter()
+router.register(r'', SessionModelViewSet)
+router.register(r'session_appointment', AppointmentSessionModelViewSet)
 
 
 urlpatterns = [
-    # path('', include(router.urls)),
-    path('', CreateSessionAPIView.as_view())
+    path('', include(router.urls)),
 ]
