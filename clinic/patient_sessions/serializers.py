@@ -49,7 +49,6 @@ class AppointmentSessionSerializer(ModelSerializer):
         return instance
 
     def validate_session(self, data):
-        import pdb; pdb.set_trace()
         machine = self.initial_data['machine'] if self.initial_data['machine'] else None
         room = self.initial_data['room'] if self.initial_data['room'] else None
         start_time = self.initial_data['start_time'] if self.initial_data['start_time'] else None
