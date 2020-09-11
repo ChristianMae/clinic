@@ -35,4 +35,5 @@ class StaffSerializer(ModelSerializer):
         instance.address = validated_data.get('address', instance.address)
         instance.assigned_to = validated_data.get('assigned_to', instance.assigned_to)
         instance.password = validated_data.get('password', instance.password)
+        instance.save()
         return instance

@@ -15,5 +15,4 @@ class RoomSerializer(ModelSerializer):
         instance.floor_no = validated_data.get('floor_no', instance.floor_no)
         instance.location = validated_data.get('location', instance.location)
         instance.save()
-
         return instance

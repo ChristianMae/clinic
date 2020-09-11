@@ -20,4 +20,5 @@ class PatientSerializer(ModelSerializer):
         instance.contact_no = validated_data.get('contact_no', instance.contact_no)
         instance.address = validated_data.get('address', instance.address)
         instance.is_active = validated_data.get('is_active', instance.is_active)
+        instance.save()
         return instance

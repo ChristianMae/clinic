@@ -14,4 +14,5 @@ class ProcedureSerializer(ModelSerializer):
         instance.name = validated_data.get('name', instance.name)
         instance.description = validated_data.get('description', instance.description)
         instance.price = validated_data.get('price', instance.price)
+        instance.save()
         return instance

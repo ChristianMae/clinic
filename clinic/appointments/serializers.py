@@ -15,5 +15,6 @@ class AppointmentSerializer(ModelSerializer):
         instance.date = validated_data.get('date', instance.date)
         instance.time = validated_data.get('time', instance.time)
         instance.location = validated_data.get('location', instance.location)
+        instance.save()
         return instance
 

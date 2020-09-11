@@ -1,4 +1,3 @@
-import calendar
 from datetime import timedelta
 from rest_framework.serializers import (ModelSerializer, SerializerMethodField)
 from .models import (
@@ -8,6 +7,7 @@ from .models import (
 from clinic.rooms.models import Room
 from clinic.machines.models import Machine
 from clinic.patients.serializers import PatientSerializer
+from utility.utils import date_offset_generator
 
 
 class AppointmentSessionSerializer(ModelSerializer):
@@ -25,22 +25,14 @@ class AppointmentSessionSerializer(ModelSerializer):
         instance.room = validated_data.get('room', instance.room)
         instance.machine = validated_data.get('machine', instance.machine)
         instance.date = validated_data.get('date', instance.date)
-        instance.time = validated_data.get('time', instance.time)
+        instance.start_time = validated_data.get('start_time', instance.start_time)
+        instance.end_time = validated_data.get('end_time', instance.end_time)
         instance.symptoms = validated_data.get('symptoms', instance.symptoms)
         instance.findings = validated_data.get('findings', instance.findings)
         instance.prescription = validated_data.get('prescription', instance.prescription)
         instance.image = validated_data.get('image', instance.image)
+        instance.save()
         return instance
-
-
-def date_offset_generator(date):
-    days_available = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
-    if calendar.day_name[date.weekday()] in days_available:
-        return date
-    elif calendar.day_name[date.weekday()] == 'Sunday':
-        return date + timedelta(days=1)
-    else:
-        return date + timedelta(days=2)
 
 
 class SessionSerializer(ModelSerializer):
@@ -69,6 +61,7 @@ class SessionSerializer(ModelSerializer):
         instance.session_interval = validated_data.get('session_interval', instance.session_interval)
         instance.number_of_session = validated_data.get('number_of_session', instance.number_of_session)
         instance.start_date = validated_data.get('start_date', instance.start_date)
+        instance.save()
         return instance
 
     def generate_sessions(self, *args, **kwargs):
