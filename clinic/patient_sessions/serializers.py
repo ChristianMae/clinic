@@ -45,7 +45,6 @@ def date_offset_generator(date):
 
 class SessionSerializer(ModelSerializer):
     sessions = AppointmentSessionSerializer(many=True, read_only=True)
-    patient = SerializerMethodField()
     class Meta:
         model = Session
         fields = (
