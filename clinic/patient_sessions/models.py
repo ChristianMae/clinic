@@ -33,10 +33,10 @@ class Session(TimeStampedModel):
 
 
 class AppointmentSession(TimeStampedModel):
-    ACTIVE = 'A'
-    DONE = 'D'
-    CANCELED = 'C'
-    RESCHEDULE = 'R'
+    ACTIVE = 'active'
+    DONE = 'done'
+    CANCELED = 'cancel'
+    RESCHEDULE = 'reschedule'
     APPOINTMENT_STATUS = [
         (ACTIVE, 'active'),
         (DONE, 'done'),
@@ -51,7 +51,7 @@ class AppointmentSession(TimeStampedModel):
         **OPTIONAL
     )
     status = models.CharField(
-        max_length=2,
+        max_length=10,
         choices=APPOINTMENT_STATUS,
         default=ACTIVE,
         **OPTIONAL

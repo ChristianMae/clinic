@@ -1,11 +1,13 @@
-from rest_framework.serializers import ModelSerializer
-from rest_framework import serializers
+import calendar
+from datetime import timedelta
+from rest_framework.serializers import (ModelSerializer, SerializerMethodField)
 from .models import (
     Session,
     AppointmentSession
 )
 from clinic.rooms.models import Room
 from clinic.machines.models import Machine
+from clinic.patients.serializers import PatientSerializer
 
 
 class AppointmentSessionSerializer(ModelSerializer):
@@ -30,43 +32,8 @@ class AppointmentSessionSerializer(ModelSerializer):
         instance.image = validated_data.get('image', instance.image)
         return instance
 
-    def validate_session(self, data):
-        machine = self.initial_data['machine'] if self.initial_data['machine'] else None
-        room = self.initial_data['room'] if self.initial_data['room'] else None
-        start_time = self.initial_data['start_time'] if self.initial_data['start_time'] else None
-        end_time = self.initial_data['end_time'] if self.initial_data['end_time'] else None
-        date = data['start_date']
 
-        machines = self.Meta.model.objects.filter(
-            machine=machine,
-            date=date,
-            start_time__range=(start_time, end_time)
-        )
-
-        if machines:
-            raise serializers.ValidationError(f'Machine is not available on {date} ({start_time})', code='Unavailble')
-        
-        rooms = self.Meta.model.objects.filter(
-            room=room,
-            date=date,
-            start_time__range=(start_time, end_time)
-        )
-
-        if rooms:
-            raise serializers.ValidationError(f'Room is not available on {date} ({start_time})', code='Unavailable')
-
-        session_data = dict(data)
-        session, created = Session.objects.get_or_create(**session_data)
-        return session
-    
-    def validate_date(self, data):
-        return self.initial_data['session.start_date']
-
-
-def date_offset_generator(date, interval):
-    import calendar
-    from datetime import timedelta
-
+def date_offset_generator(date):
     days_available = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
     if calendar.day_name[date.weekday()] in days_available:
         return date
@@ -77,13 +44,25 @@ def date_offset_generator(date, interval):
 
 
 class SessionSerializer(ModelSerializer):
-    sessions = AppointmentSessionSerializer(many=True,read_only=True)
+    sessions = AppointmentSessionSerializer(many=True, read_only=True)
+    patient = SerializerMethodField()
     class Meta:
         model = Session
-        fields = ('patient', 'procedure', 'session_interval', 'number_of_session', 'start_date', 'sessions')
+        fields = (
+            'patient',
+            'procedure',
+            'session_interval',
+            'number_of_session',
+            'start_date',
+            'sessions'
+        )
 
     def create(self, validated_data):
-        return self.Meta.model.objects.create(**validated_data)
+        session_detail = self.Meta.model.objects.create(**validated_data)
+        sessions = self.generate_sessions(session=session_detail)
+        for session in sessions:
+            AppointmentSession.objects.create(session=session_detail, status='active', **session)
+        return session_detail
 
     def update(self, instance, validated_data):
         instance.patient = validated_data.get('patient', instance.patient)
@@ -92,3 +71,15 @@ class SessionSerializer(ModelSerializer):
         instance.number_of_session = validated_data.get('number_of_session', instance.number_of_session)
         instance.start_date = validated_data.get('start_date', instance.start_date)
         return instance
+
+    def generate_sessions(self, *args, **kwargs):
+        session = kwargs.get('session')
+        start_date = date_offset_generator(session.start_date)
+        sessions = []   
+        for counter in range(session.number_of_session):
+            date = start_date if counter < 1 else date_offset_generator(date + timedelta(days=int(session.session_interval)))
+            data = {
+                'date': date
+            }
+            sessions.append(data)
+        return sessions
