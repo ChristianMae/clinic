@@ -1,10 +1,15 @@
 from datetime import timedelta
-from rest_framework.serializers import (ModelSerializer, SerializerMethodField)
+from rest_framework.serializers import (
+    ModelSerializer,
+    SerializerMethodField,
+    ValidationError
+)
 from .models import (
     Session,
     AppointmentSession
 )
 from clinic.rooms.models import Room
+from clinic.patients.models import Patient
 from clinic.machines.models import Machine
 from clinic.patients.serializers import PatientSerializer
 from utility.utils import date_offset_generator
@@ -37,6 +42,7 @@ class AppointmentSessionSerializer(ModelSerializer):
 
 class SessionSerializer(ModelSerializer):
     sessions = AppointmentSessionSerializer(many=True, read_only=True)
+    patient = SerializerMethodField()
     class Meta:
         model = Session
         fields = (
@@ -49,7 +55,12 @@ class SessionSerializer(ModelSerializer):
         )
 
     def create(self, validated_data):
-        session_detail = self.Meta.model.objects.create(**validated_data)
+        patient_id = self.initial_data['patient']
+        try:
+            patient = Patient.objects.get(pk=patient_id)
+        except Patient.DoesNotExist:
+            raise ValidationError(f'Patient with id {patient_id} does not exist.')
+        session_detail = self.Meta.model.objects.create(patient=patient, **validated_data)
         sessions = self.generate_sessions(session=session_detail)
         for session in sessions:
             AppointmentSession.objects.create(session=session_detail, status='active', **session)
@@ -75,3 +86,6 @@ class SessionSerializer(ModelSerializer):
             }
             sessions.append(data)
         return sessions
+
+    def get_patient(self, obj):
+        return f'{obj.patient.first_name} {obj.patient.last_name}'

@@ -2,15 +2,16 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
     SessionModelViewSet,
-    CreateSessionAPIView,
     AppointmentSessionModelViewSet
 )
 
-router = DefaultRouter()
-router.register(r'', SessionModelViewSet)
-router.register(r'session_appointment', AppointmentSessionModelViewSet)
+session_router = DefaultRouter()
+sessions_router = DefaultRouter()
+session_router.register(r'session', SessionModelViewSet)
+sessions_router.register(r'session_appointment', AppointmentSessionModelViewSet)
 
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('', include(session_router.urls)),
+    path('', include(sessions_router.urls)),
 ]
