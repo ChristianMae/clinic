@@ -24,10 +24,11 @@ class AppointmentSessionModelViewSet(ModelViewSet):
     
     def get_queryset(self):
         model = self.serializer_class.Meta.model
-        room = self.request.GET.get('room', None)
-        machine = self.request.GET.get('machine', None)
-        date = self.request.GET.get('date', None)
-        sessions = model.objects.filter(room_id=room, machine_id=machine, date=date, status='active')
-        if not sessions:
+        if not self.kwargs.get('pk'):
+            room = self.request.GET.get('room', None)
+            machine = self.request.GET.get('machine', None)
+            date = self.request.GET.get('date', None)
+            sessions = model.objects.filter(room__id=room, machine__id=machine, date=date, status='active')
+        else:
             sessions = model.objects.all()
         return sessions
