@@ -79,4 +79,8 @@ class AppointmentSession(TimeStampedModel):
 
 
     def __str__(self):
-        return f'{self.session.patient} - {self.date}'
+        try:
+            return f'{self.session.patient} - {self.date}'
+        except:
+            return '-'
+        

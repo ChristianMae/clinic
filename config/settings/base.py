@@ -36,6 +36,7 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
+    'storages',
     'simple_history',
     'rest_framework',
     'corsheaders',
@@ -115,8 +116,25 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
 
-MEDIA_ROOT = str(APPS_DIR / "media")
-MEDIA_URL = "/media/"
+# Digital Ocean config
+AWS_ACCESS_KEY_ID = env('BUCKET_ACCESS_KEY_ID',default='')
+AWS_SECRET_ACCESS_KEY = env('BUCKET_SECRET_ACCESS_KEY',default='')
+
+AWS_STORAGE_BUCKET_NAME = env('BUCKET_STORAGE_BUCKET_NAME',default='')
+AWS_S3_ENDPOINT_URL = env('BUCKET_S3_ENDPOINT_URL',default='')
+# If enabled the CDN, so you get a custom domain. Use the end point in the AWS_S3_CUSTOM_DOMAIN setting. 
+AWS_S3_CUSTOM_DOMAIN = env('BUCKET_S3_CUSTOM_DOMAIN',default='')
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
+
+AWS_DEFAULT_ACL = 'public-read'
+
+DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
+
+MEDIA_URL = '{}/{}/'.format(AWS_S3_CUSTOM_DOMAIN, 'media')
+MEDIA_ROOT = 'media/'
+
 
 EMAIL_BACKEND = env(
     "DJANGO_EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend"
