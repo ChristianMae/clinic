@@ -20,6 +20,7 @@ class AppointmentSessionSerializer(ModelSerializer):
     class Meta:
         model = AppointmentSession
         fields = ('__all__')
+        depth = 2
 
     def create(self, validated_data):
         return self.Meta.model.objects.create(**validated_data)
