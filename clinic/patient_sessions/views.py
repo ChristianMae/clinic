@@ -18,11 +18,11 @@ class SessionModelViewSet(ModelViewSet):
     queryset = serializer_class.Meta.model.objects.all()
 
     def get_queryset(self):
-        if self.request.GET['patient']:
-            queryset = self.serializer_class.Meta.model.objects.filter(patient__id=self.request.GET['patient'])
-            return queryset
-        else:
-            self.serializer_class.Meta.model.objects.all()
+        try:
+            return self.serializer_class.Meta.model.objects.filter(patient__id=self.request.GET['patient'])
+        except:
+            return self.serializer_class.Meta.model.objects.all()
+            pass
 
 
 class AppointmentSessionModelViewSet(ModelViewSet):
