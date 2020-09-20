@@ -17,6 +17,13 @@ class SessionModelViewSet(ModelViewSet):
     serializer_class = SessionSerializer
     queryset = serializer_class.Meta.model.objects.all()
 
+    def get_queryset(self):
+        if self.request.GET['patient']:
+            queryset = self.serializer_class.Meta.model.objects.filter(patient__id=self.request.GET['patient'])
+            return queryset
+        else:
+            self.serializer_class.Meta.model.objects.all()
+
 
 class AppointmentSessionModelViewSet(ModelViewSet):
     queryset = AppointmentSessionSerializer.Meta.model.objects.all()
