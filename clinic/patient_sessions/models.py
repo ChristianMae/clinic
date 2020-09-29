@@ -69,8 +69,10 @@ class AppointmentSession(TimeStampedModel):
         **OPTIONAL
     )
     date = models.DateField(**OPTIONAL)
-    start_time = models.TimeField(**OPTIONAL)
-    end_time = models.TimeField(**OPTIONAL)
+    machine_start_time = models.TimeField(**OPTIONAL)
+    machine_end_time = models.TimeField(**OPTIONAL)
+    room_start_time = models.TimeField(**OPTIONAL)
+    room_end_time = models.TimeField(**OPTIONAL)
     symptoms = models.TextField(**OPTIONAL)
     findings = models.TextField(**OPTIONAL)
     prescription = models.TextField(**OPTIONAL)

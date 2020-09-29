@@ -1,19 +1,12 @@
 from django.shortcuts import render
-from rest_framework.viewsets import ModelViewSet
-from rest_framework.generics import (
-    CreateAPIView,
-    DestroyAPIView,
-    ListAPIView,
-    RetrieveAPIView,
-    RetrieveUpdateAPIView
-)
+from rest_framework import viewsets, generics, status, decorators, response 
 from .serializers import (
     SessionSerializer,
     AppointmentSessionSerializer
 )
 
 
-class SessionModelViewSet(ModelViewSet):
+class SessionModelViewSet(viewsets.ModelViewSet):
     serializer_class = SessionSerializer
     queryset = serializer_class.Meta.model.objects.all()
 
@@ -25,17 +18,28 @@ class SessionModelViewSet(ModelViewSet):
             pass
 
 
-class AppointmentSessionModelViewSet(ModelViewSet):
+class AppointmentSessionModelViewSet(viewsets.ModelViewSet):
     queryset = AppointmentSessionSerializer.Meta.model.objects.all()
     serializer_class = AppointmentSessionSerializer
     
-    def get_queryset(self):
-        model = self.serializer_class.Meta.model
-        if not self.kwargs.get('pk'):
-            room = self.request.GET.get('room', None)
-            machine = self.request.GET.get('machine', None)
-            date = self.request.GET.get('date', None)
-            sessions = model.objects.filter(room__id=room, machine__id=machine, date=date, status='active')
-        else:
-            sessions = model.objects.all()
-        return sessions
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        data = self.get_serializer(queryset,many=True).data
+
+        return response.Response(data, status = status.HTTP_200_OK)
+
+    @decorators.action(detail=True, methods=['get'], name='room_occupied_list')
+    def room_occupied_list(self, request, pk=None):
+        queryset = self.get_queryset()
+        occupied_rooms = queryset.filter(room__id=pk)
+        data = self.get_serializer(occupied_rooms, many=True).data
+
+        return response.Response(data, status = status.HTTP_200_OK)
+
+    @decorators.action(detail=True, methods=['get'], name='machine_occcupied_list')
+    def machine_occcupied_list(self, request, pk=None):
+        queryset = self.get_queryset()
+        occupied_machines = queryset.filter(machine__id=pk)
+        data = self.get_serializer(occupied_machines, many=True).data
+
+        return response.Response(data, status = status.HTTP_200_OK)
