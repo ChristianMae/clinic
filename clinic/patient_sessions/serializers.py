@@ -18,14 +18,12 @@ from utility.utils import date_offset_generator
 class AppointmentSessionSerializer(ModelSerializer):
     machine_name = SerializerMethodField()
     room_name = SerializerMethodField()
+    client_name = SerializerMethodField()
+    client_id = SerializerMethodField()
 
     class Meta:
         model = AppointmentSession
-        fields = ('id','machine_name', 'room_name',
-                  'session','status','room','machine',
-                  'date','machine_start_time','machine_end_time',
-                  'room_start_time','room_end_time','symptoms',
-                  'findings','prescription','image')
+        fields = '__all__'
 
     def create(self, validated_data):
         return self.Meta.model.objects.create(**validated_data)
@@ -59,7 +57,18 @@ class AppointmentSessionSerializer(ModelSerializer):
             return '{0}'.format(obj.room.room_no)
         except:
             return '-'
-        
+    
+    def get_client_name(self,obj):
+        try:
+            return '{0} {1}'.format(obj.session.patient.first_name,obj.session.patient.last_name)
+        except:
+            return '-'
+    
+    def get_client_id(self,obj):
+        try:
+            return '{0}'.format(obj.session.patient.id)
+        except:
+            return '-'
 
 
 class SessionSerializer(ModelSerializer):

@@ -43,3 +43,13 @@ class AppointmentSessionModelViewSet(viewsets.ModelViewSet):
         data = self.get_serializer(occupied_machines, many=True).data
 
         return response.Response(data, status = status.HTTP_200_OK)
+    
+    @decorators.action(detail=False, methods=['get'], name='unassigned appointments')
+    def unassigned_appointment(self, request, pk=None):
+        queryset = self.get_queryset()
+        unassigned_appointments = queryset.filter(
+            machine_start_time__isnull=True, machine_end_time__isnull=True, 
+            room_start_time__isnull=True, room_end_time__isnull=True)
+        data = self.get_serializer(unassigned_appointments, many=True).data
+
+        return response.Response(data, status = status.HTTP_200_OK)
