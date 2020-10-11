@@ -1,4 +1,6 @@
+import datetime
 from django.shortcuts import render
+from django.db.models import Q
 from rest_framework import viewsets, generics, status, decorators, response 
 from .serializers import (
     SessionSerializer,
@@ -48,8 +50,22 @@ class AppointmentSessionModelViewSet(viewsets.ModelViewSet):
     def unassigned_appointment(self, request, pk=None):
         queryset = self.get_queryset()
         unassigned_appointments = queryset.filter(
-            machine_start_time__isnull=True, machine_end_time__isnull=True, 
-            room_start_time__isnull=True, room_end_time__isnull=True)
+            Q(machine_start_time__isnull=True) | Q(machine_end_time__isnull=True) | 
+            Q(room_start_time__isnull=True) | Q(room_end_time__isnull=True))
         data = self.get_serializer(unassigned_appointments, many=True).data
+
+        return response.Response(data, status = status.HTTP_200_OK)
+    
+    @decorators.action(detail=False, methods=['get'], name='assigned appointments')
+    def assigned_appointments(self, request, pk=None):
+        queryset = self.get_queryset()
+        assigned_appointments = queryset.filter(
+                date__gte=datetime.datetime.today(),
+                machine_start_time__isnull=False, 
+                machine_end_time__isnull=False,
+                room_start_time__isnull=False, 
+                room_end_time__isnull=False
+            )
+        data = self.get_serializer(assigned_appointments, many=True).data
 
         return response.Response(data, status = status.HTTP_200_OK)

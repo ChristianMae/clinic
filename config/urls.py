@@ -20,6 +20,9 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
+admin.autodiscover()
+admin.site.enable_nav_sidebar = False
+
 urlpatterns = [
     path(
         'api/v1/',
