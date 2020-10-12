@@ -69,3 +69,13 @@ class AppointmentSessionModelViewSet(viewsets.ModelViewSet):
         data = self.get_serializer(assigned_appointments, many=True).data
 
         return response.Response(data, status = status.HTTP_200_OK)
+    
+    @decorators.action(detail=False, methods=['get'], name='on-date appointments')
+    def on_date_appointments(self, request, pk=None):
+        queryset = self.get_queryset()
+        on_date_appointments = queryset.filter(
+                date__range=(datetime.date.today(), datetime.date.today())
+            )
+        data = self.get_serializer(on_date_appointments, many=True).data
+
+        return response.Response(data, status = status.HTTP_200_OK)
